@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput } from 'r
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HomeScreen = () => {
+const PrestamosScreen = () => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const menuHeight = useRef(new Animated.Value(0)).current;
@@ -36,9 +36,6 @@ const HomeScreen = () => {
   const handleAlumnos = () => {
     navigation.navigate('Alumnos');
   };
-  const handlePrestamos = () => {
-    navigation.navigate('Prestamos');
-  };
 
   return (
     <View style={styles.container}>
@@ -47,7 +44,7 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
           <Icon name="menu" size={30} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Biblioteca</Text>
+        <Text style={styles.headerText}>Prestamos</Text>
       </View>
 
       {/* Animated Dropdown Menu */}
@@ -60,26 +57,18 @@ const HomeScreen = () => {
           <Icon name="book" size={20} color="#333" />
           <Text style={styles.menuItemText}>Libros</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handlePrestamos}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleSignOut}>
           <Icon name="note-outline" size={20} color="#333" />
           <Text style={styles.menuItemText}>Prestamos </Text>
         </TouchableOpacity>
       </Animated.View>
 
-      {/* Body section */}
-      <View style={styles.body}>
-        <Text style={styles.bodyContent}></Text>
-        <View style={styles.reportesContainer}>
-          <View style={styles.reportesBox}>
-            <Text style={styles.reportesTitle}>Libros</Text>
-            <Text style={styles.reportesCount}>{numReportesLibros}</Text>
-          </View>
-          <View style={styles.reportesBox}>
-            <Text style={styles.reportesTitle}>Alumnos</Text>
-            <Text style={styles.reportesCount}>{numReportesAlumnos}</Text>
-          </View>
-        </View>
+
+       {/* Body section */}
+       <View style={styles.body}>
+        <Text style={styles.bodyContent}>Prestamos</Text>
       </View>
+
 
       {/* Reportes Overlay */}
       {reportesVisible && (
@@ -181,11 +170,10 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   reportesBox: {
-    backgroundColor: 'green',
+    backgroundColor: '#006400',
     padding: 70,
-    borderRadius: 0,
+    borderRadius: 90,
     alignItems: 'center',
-    height: 500
   },
   reportesTitle: {
     fontSize: 20,
@@ -251,4 +239,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default PrestamosScreen;
