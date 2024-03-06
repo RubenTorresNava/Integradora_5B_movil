@@ -91,15 +91,15 @@ const PrestamosScreen = () => {
       {/* Footer section */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.iconButton}>
-          <Icon name="home" size={30} color="#4F8EF7" />
+          <Icon name="home" size={35} color="#4F8EF7" />
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
-          <Icon name="alert" size={30} color="#4F8EF7" />
+          <Icon name="alert" size={35} color="#4F8EF7" />
           <Text style={styles.iconText}>Reportes</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={handleSignOut}>
-          <Icon name="account" size={30} color="#4F8EF7" />
+          <Icon name="logout" size={35} color="#4F8EF7" />
           <Text style={styles.iconText}>Cerrar Sesion</Text>
         </TouchableOpacity>
       </View>

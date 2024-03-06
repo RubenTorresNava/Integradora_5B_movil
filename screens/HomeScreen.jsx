@@ -7,8 +7,8 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const menuHeight = useRef(new Animated.Value(0)).current;
-  const [numReportesLibros, setNumReportesLibros] = useState(10);
-  const [numReportesAlumnos, setNumReportesAlumnos] = useState(5);
+  const [numReportesLibros, setNumReportesLibros] = useState(50);
+  const [numReportesAlumnos, setNumReportesAlumnos] = useState(20);
   const [reportesVisible, setReportesVisible] = useState(false);
 
   const toggleMenu = () => {
@@ -36,6 +36,7 @@ const HomeScreen = () => {
   const handleAlumnos = () => {
     navigation.navigate('Alumnos');
   };
+
   const handlePrestamos = () => {
     navigation.navigate('Prestamos');
   };
@@ -53,15 +54,15 @@ const HomeScreen = () => {
       {/* Animated Dropdown Menu */}
       <Animated.View style={[styles.dropdownMenu, { height: menuHeight }]}>
         <TouchableOpacity style={styles.menuItem} onPress={handleAlumnos}>
-          <Icon name="account-circle" size={20} color="#333" />
+          <Icon name="account-circle" size={22} color="#333" />
           <Text style={styles.menuItemText}>Alumnos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handleLibros}>
-          <Icon name="book" size={20} color="#333" />
+          <Icon name="book" size={22} color="#333" />
           <Text style={styles.menuItemText}>Libros</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handlePrestamos}>
-          <Icon name="note-outline" size={20} color="#333" />
+          <Icon name="note-outline" size={22} color="#333" />
           <Text style={styles.menuItemText}>Prestamos </Text>
         </TouchableOpacity>
       </Animated.View>
@@ -72,14 +73,20 @@ const HomeScreen = () => {
         <View style={styles.reportesContainer}>
           <View style={styles.reportesBox}>
             <Text style={styles.reportesTitle}>Libros</Text>
-            <Text style={styles.reportesCount}>{numReportesLibros}</Text>
+            <Text style={styles.reportesCount}>
+              <Icon name="book" size={40} color="white" /> {numReportesLibros}
+            </Text>
           </View>
+          <View style={styles.separator}></View>
           <View style={styles.reportesBox}>
             <Text style={styles.reportesTitle}>Alumnos</Text>
-            <Text style={styles.reportesCount}>{numReportesAlumnos}</Text>
+            <Text style={styles.reportesCount}>
+              <Icon name="account-circle" size={40} color="white" /> {numReportesAlumnos}
+            </Text>
           </View>
         </View>
       </View>
+      
 
       {/* Reportes Overlay */}
       {reportesVisible && (
@@ -102,15 +109,15 @@ const HomeScreen = () => {
       {/* Footer section */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.iconButton}>
-          <Icon name="home" size={30} color="#4F8EF7" />
+          <Icon name="home" size={35} color="#4F8EF7" />
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
-          <Icon name="alert" size={30} color="#4F8EF7" />
+          <Icon name="alert" size={35} color="#4F8EF7" />
           <Text style={styles.iconText}>Reportes</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={handleSignOut}>
-          <Icon name="account" size={30} color="#4F8EF7" />
+          <Icon name="logout" size={35} color="#4F8EF7" />
           <Text style={styles.iconText}>Cerrar Sesion</Text>
         </TouchableOpacity>
       </View>
@@ -182,10 +189,9 @@ const styles = StyleSheet.create({
   },
   reportesBox: {
     backgroundColor: 'green',
-    padding: 70,
-    borderRadius: 0,
+    padding: 50,
+    borderRadius: 90,
     alignItems: 'center',
-    height: 500
   },
   reportesTitle: {
     fontSize: 20,
@@ -196,6 +202,9 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: 'white',
     marginTop: 5,
+  },
+  separator: {
+    width: 20,
   },
   reportesOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -208,11 +217,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: 300,
-  },
-  reportesTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
   },
   reportesInput: {
     height: 40,
