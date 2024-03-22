@@ -1,14 +1,29 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 
 const LibrosScreen = () => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const menuHeight = useRef(new Animated.Value(0)).current;
   const [reportesVisible, setReportesVisible] = useState(false);
+  const [datos, setDatos] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/integradora');
+        console.log(response.data);
+
+        setDatos(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
       toValue: menuVisible ? 0 : 150,
@@ -93,13 +108,13 @@ const LibrosScreen = () => {
 
         {/* Catálogo de libros */}
         <View style={styles.librosContainer}>
-          {libros.map((libro) => (
-            <TouchableOpacity key={libro.id} style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', libro.titulo)}>
-              <Text style={styles.libroTitulo}>{libro.titulo}</Text>
-              <Text style={styles.libroAutor}>{libro.autor}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+  {datos.map((libro) => (
+    <TouchableOpacity key={libro.id} style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', libro.titulo)}>
+      <Text style={styles.libroTitulo}>{libro.titulo}</Text>
+      <Text style={styles.libroAutor}>{libro.autor}</Text>
+    </TouchableOpacity>
+  ))}
+</View>
 
         {/* Botones para Nuevo Libro y Préstamo */}
         <View style={styles.botonesContainer}>
