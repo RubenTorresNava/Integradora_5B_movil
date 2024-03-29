@@ -9,39 +9,39 @@ const PORT = 3000;
 app.use(cors());
 
 mongoose.connect('mongodb://localhost/integradora', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 
 // Creación del esquema del producto
 const libroSchema = new mongoose.Schema({
-        cantidad: {
-            type: Number,
-            required: true
-        },
-        titulo: {
-            type: String,
-            required: true
-        },
-        autor: {
-            type: String,
-            required: true
-        },
-        editorial: {
-            type: String,
-            required: true
-        },
-        apartado: {
-            type: String,
-            required: true
-        },
-        clasificacion: {
-            type: String,
-            required: true
-        }
-    
-    });
-    
+    cantidad: {
+        type: Number,
+        required: true
+    },
+    titulo: {
+        type: String,
+        required: true
+    },
+    autor: {
+        type: String,
+        required: true
+    },
+    editorial: {
+        type: String,
+        required: true
+    },
+    apartado: {
+        type: String,
+        required: true
+    },
+    clasificacion: {
+        type: String,
+        required: true
+    }
+
+});
+
 const alumnoSchema = new mongoose.Schema({
     noCtrl: {
         type: Number,
@@ -112,6 +112,39 @@ app.get('/integradora/alumnos', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-  console.log(`La Biblioteca se está ejecutando en: http://localhost:${PORT}`);
+//Ruta para contar los libros
+app.get('/integradora/libros/count', async (req, res) => {
+    try {
+        const resultado = await Libro.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$cantidad" }
+                }
+            }
+        ]);
+        if (resultado.length > 0) {
+            const total = resultado[0].total;
+            res.json({ total });
+        } else {
+            res.json({ total: 0 });
+        }
+    } catch (error) {
+        console.error("Error al calcular la sumatoria de la cantidad de libros:", error);
+        res.status(500).json({ message: "Error en el servidor" });
+    }
 });
+
+//Ruta para contar los alumnos
+app.get('/integradora/alumnos/count', async (req, res) => {
+    try {
+        const total = await Alumno.countDocuments();
+        res.status(200).json({ total });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al contar los alumnos' });
+    }
+});
+
+    app.listen(PORT, () => {
+        console.log(`La Biblioteca se está ejecutando en: http://localhost:${PORT}`);
+    });

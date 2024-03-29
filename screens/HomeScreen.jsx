@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -10,6 +11,31 @@ const HomeScreen = () => {
   const [numReportesLibros, setNumReportesLibros] = useState(50);
   const [numReportesAlumnos, setNumReportesAlumnos] = useState(20);
   const [reportesVisible, setReportesVisible] = useState(false);
+  const [countLibros, setCountLibros] = useState(0);
+  const [countAlumnos, setCountAlumnos] = useState(0);
+
+  // Función para obtener el total de libros
+  useEffect(() => {
+    const fetchLibros = async () => {
+      try{
+        const response = await axios.get('http://localhost:3000/integradora/libros/count');
+        setCountLibros(response.data.total);
+      }catch(error){
+        console.error("Error al obtener el total de libros:", error);
+      }
+    };
+
+    const fetchAlumnos = async () => {
+      try{
+        const response = await axios.get('http://localhost:3000/integradora/alumnos/count');
+        setCountAlumnos(response.data.total);
+      }catch(error){
+        console.error("Error al obtener el total de alumnos:", error);
+      }
+    }
+    fetchAlumnos();
+    fetchLibros();
+  }, []);
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
@@ -79,14 +105,14 @@ const HomeScreen = () => {
           <View style={styles.reportesBox}>
             <Text style={styles.reportesTitle}>Libros</Text>
             <Text style={styles.reportesCount}>
-              <Icon name="book" size={40} color="white" /> {numReportesLibros}
+              <Icon name="book" size={40} color="white" /> {(countLibros || 0)}
             </Text>
           </View>
           <View style={styles.separator}></View>
           <View style={styles.reportesBox}>
             <Text style={styles.reportesTitle}>Alumnos</Text>
             <Text style={styles.reportesCount}>
-              <Icon name="account-circle" size={40} color="white" /> {numReportesAlumnos}
+              <Icon name="account-circle" size={40} color="white" /> {(countAlumnos || 0)}
             </Text>
           </View>
         </View>
