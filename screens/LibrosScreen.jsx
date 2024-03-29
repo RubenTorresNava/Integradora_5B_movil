@@ -1,13 +1,27 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView, TextInput, Image } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 
 const LibrosScreen = () => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const menuHeight = useRef(new Animated.Value(0)).current;
   const [reportesVisible, setReportesVisible] = useState(false);
+  const [datos, setDatos] = useState([]);
+
+  useEffect(() => {
+    const fetchLibros = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/integradora/libros');
+        setDatos(response.data);
+      } catch (error) {
+        console.error('Error al obtener los libros:', error);
+      }
+    };
+    fetchLibros();
+  }, []);
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
@@ -27,10 +41,6 @@ const LibrosScreen = () => {
     navigation.navigate('Login');
   };
 
-  const handleLibros = () => {
-    // Puedes realizar acciones específicas para la sección de libros aquí
-  };
-
   const handleAlumnos = () => {
     navigation.navigate('Alumnos');
   };
@@ -42,7 +52,11 @@ const LibrosScreen = () => {
   const handlePrestamos = () => {
     navigation.navigate('Prestamos');
   };
-
+  
+  const handleLibros = () => {
+    // Puedes realizar acciones específicas para la sección de libros aquí
+  };
+  
   const handleNuevoLibro = () => {
     // Puedes implementar acciones relacionadas con la creación de un nuevo libro aquí
   };
@@ -51,22 +65,21 @@ const LibrosScreen = () => {
     // Puedes implementar acciones relacionadas con la gestión de préstamos aquí
   };
 
-  const libros = [
-    { id: 1, titulo: 'Libro 1', autor: 'Autor 1' },
-    { id: 2, titulo: 'Libro 2', autor: 'Autor 2' },
-    { id: 3, titulo: 'Libro 3', autor: 'Autor 3' },
-    { id: 4, titulo: 'Libro 4', autor: 'Autor 4' },
-    { id: 5, titulo: 'Libro 5', autor: 'Autor 5' },
-    { id: 6, titulo: 'Libro 6', autor: 'Autor 6' },
-    { id: 7, titulo: 'Libro 7', autor: 'Autor 7' },
-  ];
+  const renderLibroItem = ({ item }) => (
+    <TouchableOpacity style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', item.titulo)}>
+      <Text style={styles.libroTitulo}>Titulo del libro: {item.titulo}</Text>
+      <Text style={styles.libroAutor}>Autor: {item.autor}</Text>
+      <Text style={styles.libroAutor}>Editorial: {item.editorial}</Text>
+
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       {/* Header section */}
       <View style={styles.header}>
-         {/* Agrega el logo en la esquina superior derecha */}
-         <Image
+        {/* Agrega el logo en la esquina superior derecha */}
+        <Image
           source={require('../assets/images/utd.png')}
           style={styles.logo}
         />
@@ -94,29 +107,13 @@ const LibrosScreen = () => {
       </Animated.View>
 
       {/* Body section */}
-      <ScrollView style={styles.body}>
-        <Text style={styles.bodyContent}>Libros Disponibles</Text>
-
-        {/* Catálogo de libros */}
-        <View style={styles.librosContainer}>
-          {libros.map((libro) => (
-            <TouchableOpacity key={libro.id} style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', libro.titulo)}>
-              <Text style={styles.libroTitulo}>{libro.titulo}</Text>
-              <Text style={styles.libroAutor}>{libro.autor}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Botones para Nuevo Libro y Préstamo */}
-        <View style={styles.botonesContainer}>
-          <TouchableOpacity style={styles.boton} onPress={handleNuevoLibro}>
-            <Text style={styles.botonText}>Nuevo Libro</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.boton} onPress={handlePrestamo}>
-            <Text style={styles.botonText}>Nuevo Préstamo</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      <FlatList
+        style={styles.body}
+        data={datos}
+        renderItem={renderLibroItem}
+        keyExtractor={(item) => item.titulo.toString()}
+        numColumns={2} // Define el número de columnas en tu cuadrícula
+      />
 
       {/* Reportes Overlay */}
       {reportesVisible && (
@@ -169,16 +166,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#DDD',
     paddingTop: 20,
     flexDirection: 'row', // Para alinear el logo y el texto en la misma fil
-     // Estilos de sombra para iOS
-  shadowColor: 'rgba( 0, 800, 0, 1 )',
-  shadowOffset: {
-    width: 10,
-    height: 2,
-  },
-  shadowOpacity: 10,
-  shadowRadius: 4,
-  // Estilos de sombra para Android
-  elevation: 30,
   },
   logo: {
     width: 70, 
@@ -231,20 +218,17 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
-  librosContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
   libroItem: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#4F8EF7',
-    borderRadius: 0,
-    paddingVertical: 86,
-    paddingHorizontal: 26,
-    margin: 4,
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    margin: 5,
+    flex: 1,
+    minWidth: '45%',
   },
   libroTitulo: {
     fontSize: 16,
@@ -254,21 +238,6 @@ const styles = StyleSheet.create({
   libroAutor: {
     fontSize: 14,
     color: '#555',
-    marginLeft: 8,
-  },
-  botonesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
-  },
-  boton: {
-    backgroundColor: '#4F8EF7',
-    padding: 10,
-    borderRadius: 8,
-  },
-  botonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
   reportesOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -314,16 +283,13 @@ const styles = StyleSheet.create({
     borderTopColor: 'white',
     shadowColor: 'rgba( 0, 500, 0, 1 )',
     shadowOffset: {
-    width: 60,
-    height: 60,
-  },
+      width: 60,
+      height: 60,
+    },
     shadowOpacity: 10,
     shadowRadius: 10,
     // Estilos de sombra para Android
-     elevation: 10,
-    
-    
-    
+    elevation: 10,
   },
   iconButton: {
     alignItems: 'center',

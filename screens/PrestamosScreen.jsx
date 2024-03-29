@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
+
 const PrestamosScreen = () => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -9,6 +11,21 @@ const PrestamosScreen = () => {
   const [numReportesLibros, setNumReportesLibros] = useState(10);
   const [numReportesAlumnos, setNumReportesAlumnos] = useState(5);
   const [reportesVisible, setReportesVisible] = useState(false);
+  const [datos, setDatos] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/integradora/prestamos');
+        console.log(response.data);
+
+        setDatos(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
@@ -39,6 +56,20 @@ const PrestamosScreen = () => {
     navigation.navigate('Home');
   };
 
+  const handlePrestamos = () => {
+    // Puedes realizar acciones específicas para la sección de prestamos aquí
+  };
+
+  const renderPrestamoItem = ({ item }) => (
+    <TouchableOpacity style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', item.idPrestamo)}>
+      <Text style={styles.prestamoID}>Fólio: {item.idPrestamo}</Text>
+      <Text style={styles.estado}>Estado del prestamo: {item.estado}</Text>
+      <Text style={styles.estado}>Fecha de prestamo: {item.fechaPrestamo}</Text>
+      <Text style={styles.estado}>Fecha de entrega: {item.fechaEntrega}</Text>
+      
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       {/* Header section */}
@@ -53,7 +84,6 @@ const PrestamosScreen = () => {
         </TouchableOpacity>
         <Text style={styles.headerText}>Prestamos</Text>
       </View>
-
       {/* Animated Dropdown Menu */}
       <Animated.View style={[styles.dropdownMenu, { height: menuHeight }]}>
         <TouchableOpacity style={styles.menuItem} onPress={handleAlumnos}>
@@ -64,7 +94,7 @@ const PrestamosScreen = () => {
           <Icon name="book" size={20} color="#333" />
           <Text style={styles.menuItemText}>Libros</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handleSignOut}>
+        <TouchableOpacity style={styles.menuItem} onPress={handlePrestamos}>
           <Icon name="note-outline" size={20} color="#333" />
           <Text style={styles.menuItemText}>Prestamos </Text>
         </TouchableOpacity>
@@ -74,6 +104,13 @@ const PrestamosScreen = () => {
        {/* Body section */}
        <View style={styles.body}>
         <Text style={styles.bodyContent}>Prestamos</Text>
+        <FlatList
+          data={datos}
+          renderItem={renderPrestamoItem}
+          keyExtractor={(item) => item.idPrestamo.toString()}
+          numColumns={2} // Define el número de columnas en tu cuadrícula
+          contentContainerStyle={styles.librosContainer} // Ajusta el estilo del contenedor
+        />
       </View>
 
 
@@ -128,16 +165,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#DDD',
     paddingTop: 20,
     flexDirection: 'row', // Para alinear el logo y el texto en la misma fil
-     // Estilos de sombra para iOS
-  shadowColor: 'rgba( 0, 800, 0, 1 )',
-  shadowOffset: {
-    width: 10,
-    height: 1,
-  },
-  shadowOpacity: 10,
-  shadowRadius: 4,
-  // Estilos de sombra para Android
-  elevation: 30,
   },
   logo: {
     width: 70, 
@@ -189,26 +216,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
   },
-  reportesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 30,
-  },
-  reportesBox: {
-    backgroundColor: '#006400',
-    padding: 70,
-    borderRadius: 90,
+  librosContainer: {
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingTop: 10,
   },
-  reportesTitle: {
-    fontSize: 20,
-    color: 'white',
+  libroItem: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4F8EF7',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    margin: 5,
+    minWidth: '45%', // Ajusta el ancho mínimo para adaptarse a la cuadrícula
+  },
+  prestamoID: {
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#4F8EF7',
   },
-  reportesCount: {
-    fontSize: 30,
-    color: 'white',
-    marginTop: 5,
+  estado: {
+    fontSize: 14,
+    color: '#555',
   },
   reportesOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -254,16 +287,13 @@ const styles = StyleSheet.create({
     borderTopColor: 'white',
     shadowColor: 'rgba( 0, 500, 0, 1 )',
     shadowOffset: {
-    width: 60,
-    height: 60,
-  },
+      width: 60,
+      height: 60,
+    },
     shadowOpacity: 10,
     shadowRadius: 10,
     // Estilos de sombra para Android
-     elevation: 10,
-    
-    
-    
+    elevation: 10,
   },
   iconButton: {
     alignItems: 'center',

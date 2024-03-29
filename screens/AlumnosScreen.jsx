@@ -1,13 +1,29 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 
 const AlumnosScreen = () => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const menuHeight = useRef(new Animated.Value(0)).current;
   const [reportesVisible, setReportesVisible] = useState(false);
+  const [datos, setDatos] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/integradora/alumnos');
+        console.log(response.data);
+
+        setDatos(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
@@ -43,12 +59,21 @@ const AlumnosScreen = () => {
     navigation.navigate('Prestamos');
   };
 
+  const renderAlumnoItem = ({ item }) => (
+    <TouchableOpacity style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', prestamo.idprestamo)}>
+      <Text style={styles.noCtrl}>NÚMERO DE CONTROL: {item.noCtrl}</Text>
+      <Text style={styles.nombre}>NOMBRE: {item.nombre}</Text>
+      <Text style={styles.apellidoP}>APELLIDO PATERNO: {item.apellidoP}</Text>
+      <Text style={styles.apellidoM}>APELLIDO MATERNO: {item.apellidoM}</Text>
+      <Text style={styles.carrera}>CARRERA: {item.carrera}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       {/* Header section */}
       <View style={styles.header}>
-      {/* Agrega el logo en la esquina superior derecha */}
-      <Image
+        <Image
           source={require('../assets/images/utd.png')}
           style={styles.logo}
         />
@@ -76,7 +101,13 @@ const AlumnosScreen = () => {
 
       {/* Body section */}
       <View style={styles.body}>
-        <Text style={styles.bodyContent}>Alumnos con prestamos</Text>
+        <Text style={styles.bodyContent}>Alumnos</Text>
+        <FlatList
+          data={datos}
+          renderItem={renderAlumnoItem}
+          keyExtractor={(item) => item.noCtrl.toString()}
+          numColumns={2} // Define el número de columnas en tu cuadrícula
+        />
       </View>
 
       {/* Reportes Overlay */}
@@ -130,16 +161,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#DDD',
     paddingTop: 20,
     flexDirection: 'row', // Para alinear el logo y el texto en la misma fil
-     // Estilos de sombra para iOS
-  shadowColor: 'rgba( 0, 800, 0, 1 )',
-  shadowOffset: {
-    width: 10,
-    height: 1,
-  },
-  shadowOpacity: 10,
-  shadowRadius: 4,
-  // Estilos de sombra para Android
-  elevation: 30,
   },
   logo: {
     width: 70, 
@@ -184,12 +205,46 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#F5F5F5',
+    padding: 10,
   },
   bodyContent: {
     fontSize: 18,
     color: '#333',
+    marginBottom: 10,
+  },
+  libroItem: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4F8EF7',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    margin: 5,
+    minWidth: '45%', // Ajusta el ancho mínimo para adaptarse a la cuadrícula
+  },
+  noCtrl: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4F8EF7',
+  },
+  nombre: {
+    fontSize: 14,
+    color: '#555',
+  },
+  apellidoP: {
+    fontSize: 14,
+    color: '#555',
+  },
+  apellidoM: {
+    fontSize: 14,
+    color: '#555',
+  },
+  carrera: {
+    fontSize: 14,
+    color: '#555',
   },
   reportesOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -198,7 +253,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   reportesForm: {
-    backgroundColor: 'green',
+    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
     width: 300,
@@ -242,9 +297,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     // Estilos de sombra para Android
      elevation: 10,
-    
-    
-    
   },
   iconButton: {
     alignItems: 'center',
