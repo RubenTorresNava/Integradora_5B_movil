@@ -1,12 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
+app.use(express.json());
 
 mongoose.connect('mongodb://localhost/integradora', {
     useNewUrlParser: true,
@@ -69,6 +71,41 @@ const alumnoSchema = new mongoose.Schema({
     }
 });
 
+const empleadoSchema = new mongoose.Schema({
+    noEmpleado: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    usuario: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    }
+});
+
+const visitaSchema = new mongoose.Schema({
+    noCtrl: {
+        type: Number,
+        required: true
+    },
+    fecha: {
+        type: String,
+        required: true
+    },
+    horaEntrada: {
+        type: String,
+        required: true
+    },
+    motivo: {
+        type: String,
+        required: true
+    }
+});
+
 const PrestamoSchema = new mongoose.Schema({
     idPrestamo: { type: Number, required: true },
     idLibro: { type: Number, required: true },
@@ -81,7 +118,8 @@ const PrestamoSchema = new mongoose.Schema({
 const Libro = mongoose.model("Libro", libroSchema);
 const Alumno = mongoose.model("Alumno", alumnoSchema);
 const Prestamo = mongoose.model("Prestamo", PrestamoSchema);
-
+const Empleado = mongoose.model("Empleado", empleadoSchema);
+const Visita = mongoose.model("Visita", visitaSchema);
 
 // Ruta para obtener todos los productos
 app.get('/integradora/libros', async (req, res) => {
@@ -91,7 +129,7 @@ app.get('/integradora/libros', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los libros' });
     }
-});;
+});
 // Ruta para obtener los prestamos
 app.get('/integradora/prestamos', async (req, res) => {
     try {
@@ -102,6 +140,17 @@ app.get('/integradora/prestamos', async (req, res) => {
     }
 });
 
+//Ruta para obtener los motivos de las visitas del dia
+app.get('/integradora/visitas/motivo-visitas', async (req, res) => {
+    try {
+        const visitas = await Visita.find();
+        const motivo = visitas.map(visita => visita.motivo);
+        res.status(200).json(motivo);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+});
+
 // Ruta para obtener todos los alumnos
 app.get('/integradora/alumnos', async (req, res) => {
     try {
@@ -109,6 +158,26 @@ app.get('/integradora/alumnos', async (req, res) => {
         res.status(200).json(alumnos);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los alumnos' });
+    }
+});
+
+//Ruta para obtener los prestamos con fecha de entrega despues de la fecha de entrega
+app.get('/integradora/prestamos/prestamos-vencidos', async (req, res) => {
+    try {
+        const prestamos = await Prestamo.find({ fechaEntrega: { $lt: new Date() } });
+        res.status(200).json(prestamos);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+});
+
+//Ruta para obtener el total de visitas que van del dia
+app.get('/integradora/visitas/visitas', async (req, res) => {
+    try {
+        const visitas = await Visita.find();
+        res.status(200).json(visitas);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
     }
 });
 
@@ -145,6 +214,39 @@ app.get('/integradora/alumnos/count', async (req, res) => {
     }
 });
 
-    app.listen(PORT, () => {
-        console.log(`La Biblioteca se está ejecutando en: http://localhost:${PORT}`);
-    });
+//ruta para iniciar sesion y uso de token
+app.post('/login', async (req, res) => {
+    const { usuario, password } = req.body;
+  
+    try {
+      let empleado = await Empleado.findOne({ usuario });
+  
+      if (!empleado) {
+        return res.status(400).json({ msg: 'Usuario no encontrado' });
+      }
+  
+      const isMatch = await bcrypt.compare(password, empleado.password);
+  
+      if (!isMatch) {
+        return res.status(400).json({ msg: 'Credenciales inválidas' });
+      }
+  
+      const payload = {
+        empleado: {
+          id: empleado.id
+        }
+      };
+  
+      jwt.sign(payload, 'secretKey', { expiresIn: 3600 }, (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      });
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send('Error del servidor');
+    }
+  });
+
+app.listen(PORT, () => {
+    console.log(`La Biblioteca se está ejecutando en: http://localhost:${PORT}`);
+});

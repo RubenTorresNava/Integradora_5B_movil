@@ -3,17 +3,31 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
+import axios from 'axios';
+import { useState } from 'react';
+
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-
-  
-  const handleLogin = () => {
-   
+  const [usuario, setUsuario] = useState('');
+  const [password, setPassword] = useState('');
 
 
-    navigation.navigate('Home');
+  const handleLogin = async () => {
+/*     try {
+      const response = await axios.post('http://localhost:3000/login', { usuario, password });
+
+      if (response.data.token) { */
+        // Aquí puedes manejar el token de respuesta, como guardarlo en el almacenamiento local
+        navigation.navigate('Home');
+/*       } else {
+        console.error('Error de inicio de sesión:', response.data.msg);
+      }
+    } catch (error) {
+      console.error('Error de inicio de sesión:', error.message);
+    } */
   };
+
 
   return (
     <View className="bg-white h-full w-full">
@@ -53,6 +67,8 @@ export default function LoginScreen() {
             className="bg-black/5 p-5 rounded-2xl w-full">
 
             <TextInput
+              value={usuario}
+              onChangeText={setUsuario} // Actualizar el estado del usuario cuando cambia el texto
               placeholder="Email"
               placeholderTextColor={'black'}
             />
@@ -62,6 +78,8 @@ export default function LoginScreen() {
             className="bg-black/5 p-5 rounded-2xl w-full mb-3">
 
             <TextInput
+              value={password}
+              onChangeText={setPassword} // Actualizar el estado de la contraseña cuando cambia el texto
               placeholder="Password"
               placeholderTextColor={'black'}
               secureTextEntry

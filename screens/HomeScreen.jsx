@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image } 
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
+//import {generarReportesPDF} from '../controllers/reportes';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -48,8 +49,8 @@ const HomeScreen = () => {
   };
 
   const toggleReportes = () => {
-    setReportesVisible(!reportesVisible);
-  };
+    navigation.navigate('Reportes');
+    };
 
   const handleSignOut = () => {
     navigation.navigate('Login');
