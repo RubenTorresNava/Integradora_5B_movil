@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image } 
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
-//import {generarReportesPDF} from '../controllers/reportes';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -18,19 +17,19 @@ const HomeScreen = () => {
   // Función para obtener el total de libros
   useEffect(() => {
     const fetchLibros = async () => {
-      try{
+      try {
         const response = await axios.get('http://localhost:3000/integradora/libros/count');
         setCountLibros(response.data.total);
-      }catch(error){
+      } catch (error) {
         console.error("Error al obtener el total de libros:", error);
       }
     };
 
     const fetchAlumnos = async () => {
-      try{
+      try {
         const response = await axios.get('http://localhost:3000/integradora/alumnos/count');
         setCountAlumnos(response.data.total);
-      }catch(error){
+      } catch (error) {
         console.error("Error al obtener el total de alumnos:", error);
       }
     }
@@ -50,7 +49,7 @@ const HomeScreen = () => {
 
   const toggleReportes = () => {
     navigation.navigate('Reportes');
-    };
+  };
 
   const handleSignOut = () => {
     navigation.navigate('Login');
@@ -72,8 +71,8 @@ const HomeScreen = () => {
     <View style={styles.container}>
       {/* Header section */}
       <View style={styles.header}>
-         {/* Agrega el logo en la esquina superior derecha */}
-         <Image
+        {/* Agrega el logo en la esquina superior derecha */}
+        <Image
           source={require('../assets/images/utd.png')}
           style={styles.logo}
         />
@@ -117,8 +116,16 @@ const HomeScreen = () => {
             </Text>
           </View>
         </View>
+
+        
+        <View style={styles.visitasContainer}>
+          <View style={styles.visitasBox}>
+            <Text style={styles.visitasTitle}>Visitas</Text>
+            <Text style={styles.visitasCount}>{numReportesAlumnos}</Text>
+            <Icon name="eye" size={40} color="white" />
+          </View>
+        </View>
       </View>
-      
 
       {/* Reportes Overlay */}
       {reportesVisible && (
@@ -128,9 +135,7 @@ const HomeScreen = () => {
             <TextInput
               style={styles.reportesInput}
               placeholder="Título del libro"
-              // Agrega otros atributos según tus necesidades
             />
-            {/* Agrega más campos y botones según tus necesidades */}
             <TouchableOpacity style={styles.reportesButton} onPress={toggleReportes}>
               <Text style={styles.reportesButtonText}>Reportar</Text>
             </TouchableOpacity>
@@ -145,8 +150,8 @@ const HomeScreen = () => {
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
-          <Icon name="alert" size={35} color="#006400" />
-          <Text style={styles.iconText}>Reportes</Text>
+          <Icon name="account-circle" size={35} color="#006400" />
+          <Text style={styles.iconText}>Info Usuario</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={handleSignOut}>
           <Icon name="logout" size={35} color="#006400" />
@@ -170,17 +175,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: '#DDD',
     paddingTop: 20,
-    flexDirection: 'row', // Para alinear el logo y el texto en la misma fil
-     // Estilos de sombra para iOS
-  shadowColor: 'rgba( 0, 800, 0, 1 )',
-  shadowOffset: {
-    width: 10,
-    height: 1,
-  },
-  shadowOpacity: 10,
-  shadowRadius: 4,
-  // Estilos de sombra para Android
-  elevation: 30,
+    flexDirection: 'row', 
   },
   logo: {
     width: 70, 
@@ -256,6 +251,27 @@ const styles = StyleSheet.create({
   separator: {
     width: 20,
   },
+  visitasContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 30,
+  },
+  visitasBox: {
+    backgroundColor: '#006400', 
+    padding: 50,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  visitasTitle: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  visitasCount: {
+    fontSize: 30,
+    color: 'white',
+    marginTop: 5,
+  },
   reportesOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -293,20 +309,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     borderTopWidth: 1,
     borderTopColor: 'white',
-    shadowColor: 'rgba( 0, 500, 0, 1 )',
-    shadowOffset: {
-    width: 60,
-    height: 60,
   },
-    shadowOpacity: 10,
-    shadowRadius: 10,
-    // Estilos de sombra para Android
-     elevation: 10,
-    
-    
-    
-  },
-  
   iconButton: {
     alignItems: 'center',
     justifyContent: 'center',

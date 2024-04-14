@@ -10,7 +10,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost/integradora', {
+mongoose.connect('mongodb://localhost:27017/integradora', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });

@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, ActivityIndicator, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 
@@ -13,6 +13,9 @@ const ReportesScreen = () => {
     const [prestamosVencidos, setPrestamosVencidos] = useState([]);
     const [visitas, setVisitas] = useState([]);
     const [motivosVisitas, setMotivosVisitas] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     // Función para obtener el total de libros
     useEffect(() => {
@@ -38,6 +41,7 @@ const ReportesScreen = () => {
             </View>
         );
     }
+
     const toggleMenu = () => {
       Animated.timing(menuHeight, {
         toValue: menuVisible ? 0 : 150,
@@ -50,7 +54,7 @@ const ReportesScreen = () => {
   
     const toggleReportes = () => {
       navigation.navigate('Reportes');
-      };
+    };
   
     const handleSignOut = () => {
       navigation.navigate('Login');
@@ -67,8 +71,23 @@ const ReportesScreen = () => {
     const handlePrestamos = () => {
       navigation.navigate('Prestamos');
     };
+
     const handleHome = () => {
         navigation.navigate('Home');
+    };
+
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    };
+
+    const handleChangePassword = () => {
+      toggleModal();
+    };
+
+    const changePassword = () => {
+        // Aquí puedes agregar la lógica para cambiar la contraseña
+        // Por ejemplo, puedes comparar newPassword con confirmPassword y realizar la acción correspondiente
+        toggleModal();
     };
 
     return (
@@ -104,18 +123,64 @@ const ReportesScreen = () => {
   
         {/* Body section */}
         <View style={styles.body}>
-            <View>
-                <View>
-                    <Text>Libros Disponibles</Text>
-                    <Text>{librosDisponibles.total}</Text>
-                    <Text>Visitas</Text>
-                    <Text>{visitas.length}</Text>
-                    <Text>Motivos de Visitas</Text>
-                    <Text>{motivosVisitas.length}</Text>
-                    <Text>Prestamos Vencidos</Text>
-                    <Text>{prestamosVencidos.length}</Text>
+            {/* Informacion del perfil */}
+            <View style={styles.profileInfoContainer}>
+                <Icon name="account-circle" size={80} color="black" />
+                <View style={styles.profileInfo}>
+                    {/* Aquí puedes mostrar la información del perfil */}
+                    <Text style={styles.profileInfoText}>Nombre: Ruben Torres Nava</Text>
+                    <Text style={styles.profileInfoText}>Correo: rubentorres@gmail.com</Text>
+                    <Text style={styles.profileInfoText}>Telefono: 618372511</Text>
+                    <Text style={styles.profileInfoText}>Fecha Nacimiento: 12/8/1992</Text>
+                    {/* Puedes agregar más campos de información del perfil según necesites */}
                 </View>
-            </View>        
+            </View>
+            {/* Botón para cambiar la contraseña */}
+            <TouchableOpacity style={styles.changePasswordButton} onPress={handleChangePassword}>
+                <Text style={styles.changePasswordButtonText}>Cambiar Contraseña</Text>
+            </TouchableOpacity>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    toggleModal();
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Nueva Contraseña"
+                            value={newPassword}
+                            onChangeText={setNewPassword}
+                            secureTextEntry={true}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Confirmar Contraseña"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry={true}
+                        />
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.cancelButton]}
+                                onPress={toggleModal}
+                            >
+                                <Text style={styles.modalButtonText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.confirmButton]}
+                                onPress={changePassword}
+                            >
+                                <Text style={styles.modalButtonText}>Confirmar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
 
         {/* Footer section */}
@@ -125,8 +190,8 @@ const ReportesScreen = () => {
             <Text style={styles.iconText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
-            <Icon name="alert" size={35} color="#006400" />
-            <Text style={styles.iconText}>Reportes</Text>
+          <Icon name="account-circle" size={35} color="#006400" />
+          <Text style={styles.iconText}>Info Usuario</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleSignOut}>
             <Icon name="logout" size={35} color="#006400" />
@@ -207,62 +272,80 @@ const ReportesScreen = () => {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
+      paddingHorizontal: 20,
     },
-    bodyContent: {
-      fontSize: 18,
-      color: '#333',
-    },
-    reportesContainer: {
+    profileInfoContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginTop: 30,
-    },
-    reportesBox: {
-      backgroundColor: 'green',
-      padding: 50,
-      borderRadius: 30,
       alignItems: 'center',
+      marginBottom: 20,
+      backgroundColor: '#32cd32',
+      borderRadius: 50,
+      height: 200,
     },
-    reportesTitle: {
-      fontSize: 20,
-      color: 'white',
+    profileInfo: {
+      marginLeft: 50,
+      
+    },
+    profileInfoText: {
+      fontSize: 18,
+      color: 'black',
+      marginBottom: 10,
+    },
+    changePasswordButton: {
+      backgroundColor: '#006400',
+      paddingVertical: 12,
+      paddingHorizontal: 40,
+      borderRadius: 5,
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    changePasswordButtonText: {
+      color: '#fff',
       fontWeight: 'bold',
+      fontSize: 16,
     },
-    reportesCount: {
-      fontSize: 30,
-      color: 'white',
-      marginTop: 5,
-    },
-    separator: {
-      width: 20,
-    },
-    reportesOverlay: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    modalContainer: {
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    reportesForm: {
+    modalContent: {
       backgroundColor: '#fff',
       padding: 20,
       borderRadius: 10,
-      width: 300,
+      width: '80%',
     },
-    reportesInput: {
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
+    modalTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
       marginBottom: 10,
-      padding: 10,
-      borderRadius: 5,
+      textAlign: 'center',
     },
-    reportesButton: {
-      backgroundColor: '#4F8EF7',
+    input: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
       padding: 10,
+      marginBottom: 10,
+    },
+    modalButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    modalButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
       borderRadius: 5,
       alignItems: 'center',
     },
-    reportesButtonText: {
+    cancelButton: {
+      backgroundColor: 'red',
+    },
+    confirmButton: {
+      backgroundColor: '#006400',
+    },
+    modalButtonText: {
       color: '#fff',
       fontWeight: 'bold',
     },
@@ -294,4 +377,5 @@ const ReportesScreen = () => {
       paddingTop: 5,
     },
   });
+
 export default ReportesScreen;

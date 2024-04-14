@@ -36,7 +36,7 @@ const AlumnosScreen = () => {
   };
 
   const toggleReportes = () => {
-    setReportesVisible(!reportesVisible);
+    navigation.navigate('Reportes');
   };
 
   const handleSignOut = () => {
@@ -135,8 +135,8 @@ const AlumnosScreen = () => {
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
-          <Icon name="alert" size={35} color="#006400" />
-          <Text style={styles.iconText}>Reportes</Text>
+          <Icon name="account-circle" size={35} color="#006400" />
+          <Text style={styles.iconText}>Info Usuario</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={handleSignOut}>
           <Icon name="logout" size={35} color="#006400" />
