@@ -27,7 +27,7 @@ const AlumnosScreen = () => {
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: menuVisible ? 0 : 150,
+      toValue: menuVisible ? 0 : 280,
       duration: 200,
       useNativeDriver: false,
     }).start();
@@ -36,7 +36,7 @@ const AlumnosScreen = () => {
   };
 
   const toggleReportes = () => {
-    navigation.navigate('Reportes');
+    setModalVisible(!modalVisible);
   };
 
   const handleSignOut = () => {
@@ -45,6 +45,9 @@ const AlumnosScreen = () => {
 
   const handleLibros = () => {
     navigation.navigate('Libros');
+  };
+  const handleReporte = () => {
+    navigation.navigate('Reporte');
   };
 
   const handleAlumnos = () => {
@@ -58,6 +61,13 @@ const AlumnosScreen = () => {
   const handlePrestamos = () => {
     navigation.navigate('Prestamos');
   };
+  const handleInfoUsuario = () => {
+    navigation.navigate('Usuario');
+  };
+  const handleTemperatura = () => {
+    navigation.navigate('Temperatura');
+  };
+  
 
   const renderAlumnoItem = ({ item }) => (
     <TouchableOpacity style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', prestamo.idprestamo)}>
@@ -97,6 +107,14 @@ const AlumnosScreen = () => {
           <Icon name="note-outline" size={22} color="#333" />
           <Text style={styles.menuItemText}>Prestamos</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={handleReporte}>
+          <Icon name="alert" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Reportes Historial</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={handleTemperatura}>
+          <Icon name="thermometer" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Temperatura</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Body section */}
@@ -128,13 +146,13 @@ const AlumnosScreen = () => {
         </View>
       )}
 
-      {/* Footer section */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.iconButton} onPress={handleHome}>
-          <Icon name="home" size={35} color="#006400" />
+     {/* Footer section */}
+     <View style={styles.footer}>
+        <TouchableOpacity style={styles.iconButton}>
+          <Icon name="home" size={35} color="#006400" onPress={handleHome} />
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
+        <TouchableOpacity style={styles.iconButton} onPress={handleInfoUsuario}>
           <Icon name="account-circle" size={35} color="#006400" />
           <Text style={styles.iconText}>Info Usuario</Text>
         </TouchableOpacity>

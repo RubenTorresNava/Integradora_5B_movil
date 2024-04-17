@@ -9,8 +9,9 @@ import HomeScreen from './screens/HomeScreen';
 import AlumnosScreen from './screens/AlumnosScreen';
 import LibrosScreen from './screens/LibrosScreen';
 import PrestamosScreen from './screens/PrestamosScreen';
-import ReportesScreen from './screens/ReportesScreen';
-
+import UsuarioScreen from './screens/UsuarioScreen';
+import ReporteScreen from './screens/ReporteScreen';
+import TemperaturaScreen from './screens/TemperaturaScreen';
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -23,7 +24,10 @@ function App() {
         <Stack.Screen name="Alumnos" component={AlumnosScreen} />
         <Stack.Screen name="Libros" component={LibrosScreen} />
         <Stack.Screen name="Prestamos" component={PrestamosScreen} />
-        <Stack.Screen name="Reportes" component={ReportesScreen} />
+        <Stack.Screen name="Usuario" component={UsuarioScreen} />
+        <Stack.Screen name="Reporte" component={ReporteScreen} />
+        <Stack.Screen name="Temperatura" component={TemperaturaScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

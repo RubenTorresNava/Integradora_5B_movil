@@ -29,7 +29,7 @@ const PrestamosScreen = () => {
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: menuVisible ? 0 : 150,
+      toValue: menuVisible ? 0 : 280,
       duration: 200,
       useNativeDriver: false,
     }).start();
@@ -37,8 +37,8 @@ const PrestamosScreen = () => {
     setMenuVisible(!menuVisible);
   };
 
-  const toggleReportes = () => {
-    navigation.navigate('Reportes');
+  const handleReporte = () => {
+    navigation.navigate('Reporte');
   };
 
 
@@ -56,6 +56,17 @@ const PrestamosScreen = () => {
   const handleHome = () => {
     navigation.navigate('Home');
   };
+  const handleTemperatura = () => {
+    navigation.navigate('Temperatura');
+  };
+ 
+ 
+  
+
+  const handleInfoUsuario = () => {
+    navigation.navigate('Usuario');
+  };
+
 
   const handlePrestamos = () => {
     // Puedes realizar acciones específicas para la sección de prestamos aquí
@@ -99,6 +110,14 @@ const PrestamosScreen = () => {
           <Icon name="note-outline" size={20} color="#333" />
           <Text style={styles.menuItemText}>Prestamos </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={ handleReporte}>
+          <Icon name="alert" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Reportes Historial</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} >
+          <Icon name="thermometer" size={22} color="#333" onPress={handleTemperatura} />
+          <Text style={styles.menuItemText}>Temperatura</Text>
+        </TouchableOpacity>
       </Animated.View>
 
 
@@ -139,7 +158,7 @@ const PrestamosScreen = () => {
           <Icon name="home" size={35} color="#006400" />
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
+        <TouchableOpacity style={styles.iconButton} onPress={handleInfoUsuario}>
           <Icon name="account-circle" size={35} color="#006400" />
           <Text style={styles.iconText}>Info Usuario</Text>
         </TouchableOpacity>

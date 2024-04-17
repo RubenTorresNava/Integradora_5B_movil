@@ -10,9 +10,8 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/integradora', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+mongoose.connect('mongodb+srv://rubenbebe145rt:contraseña@integradora.gffe3xo.mongodb.net/biblioteca?retryWrites=true&w=majority&appName=Integradora', {
+  
 });
 
 // Creación del esquema del producto

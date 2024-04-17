@@ -2,49 +2,22 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, ActivityIndicator, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
 
-const ReportesScreen = () => {
+
+const UsuarioScreen = () => {
     const navigation = useNavigation();
     const [menuVisible, setMenuVisible] = useState(false);
     const menuHeight = useRef(new Animated.Value(0)).current;
     const [loading, setLoading] = useState(true);
-    const [librosDisponibles, setLibrosDisponibles] = useState([]);
-    const [prestamosVencidos, setPrestamosVencidos] = useState([]);
     const [visitas, setVisitas] = useState([]);
     const [motivosVisitas, setMotivosVisitas] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    // Función para obtener el total de libros
-    useEffect(() => {
-        Promise.all([
-            axios.get('http://localhost:3000/integradora/libros/count'),
-            axios.get('http://localhost:3000/integradora/prestamos/prestamos-vencidos'),
-            axios.get('http://localhost:3000/integradora/visitas/visitas'),
-            axios.get('http://localhost:3000/integradora/visitas/motivo-visitas')
-        ])
-        .then(([librosResponse, prestamosResponse, visitasResponse, motivosResponse]) => {
-            setLibrosDisponibles(librosResponse.data);
-            setPrestamosVencidos(prestamosResponse.data);
-            setVisitas(visitasResponse.data);
-            setMotivosVisitas(motivosResponse.data);
-            setLoading(false);
-        })        
-    }, []);
-
-    if(loading){
-        return(
-            <View style={styles.body}>
-                <ActivityIndicator size="large" color="#006400" />
-            </View>
-        );
-    }
-
-    const toggleMenu = () => {
+     const toggleMenu = () => {
       Animated.timing(menuHeight, {
-        toValue: menuVisible ? 0 : 150,
+        toValue: menuVisible ? 0 : 280,
         duration: 200,
         useNativeDriver: false,
       }).start();
@@ -52,9 +25,16 @@ const ReportesScreen = () => {
       setMenuVisible(!menuVisible);
     };
   
-    const toggleReportes = () => {
-      navigation.navigate('Reportes');
+   
+    const handleReporte = () => {
+      navigation.navigate('Reporte');
     };
+    
+  
+    const handleInfoUsuario = () => {
+      navigation.navigate('Usuario');
+    };
+  
   
     const handleSignOut = () => {
       navigation.navigate('Login');
@@ -119,6 +99,14 @@ const ReportesScreen = () => {
             <Icon name="note-outline" size={22} color="#333" />
             <Text style={styles.menuItemText}>Prestamos </Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={handleReporte}>
+          <Icon name="alert" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Reportes Historial</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={() => console.log("Temperatura")}>
+          <Icon name="thermometer" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Temperatura</Text>
+        </TouchableOpacity>
         </Animated.View>
   
         {/* Body section */}
@@ -189,7 +177,7 @@ const ReportesScreen = () => {
             <Icon name="home" size={35} color="#006400" />
             <Text style={styles.iconText}>Home</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
+          <TouchableOpacity style={styles.iconButton} onPress={handleInfoUsuario}>
           <Icon name="account-circle" size={35} color="#006400" />
           <Text style={styles.iconText}>Info Usuario</Text>
           </TouchableOpacity>
@@ -378,4 +366,4 @@ const ReportesScreen = () => {
     },
   });
 
-export default ReportesScreen;
+export default UsuarioScreen;

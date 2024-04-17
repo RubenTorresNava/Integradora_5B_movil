@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
@@ -10,9 +10,10 @@ const HomeScreen = () => {
   const menuHeight = useRef(new Animated.Value(0)).current;
   const [numReportesLibros, setNumReportesLibros] = useState(50);
   const [numReportesAlumnos, setNumReportesAlumnos] = useState(20);
-  const [reportesVisible, setReportesVisible] = useState(false);
   const [countLibros, setCountLibros] = useState(0);
   const [countAlumnos, setCountAlumnos] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tituloLibro, setTituloLibro] = useState('');
 
   // Función para obtener el total de libros
   useEffect(() => {
@@ -39,7 +40,7 @@ const HomeScreen = () => {
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: menuVisible ? 0 : 150,
+      toValue: menuVisible ? 0 : 280,
       duration: 200,
       useNativeDriver: false,
     }).start();
@@ -48,7 +49,7 @@ const HomeScreen = () => {
   };
 
   const toggleReportes = () => {
-    navigation.navigate('Reportes');
+    setModalVisible(!modalVisible);
   };
 
   const handleSignOut = () => {
@@ -65,6 +66,18 @@ const HomeScreen = () => {
 
   const handlePrestamos = () => {
     navigation.navigate('Prestamos');
+  };
+  const handleReporte = () => {
+    navigation.navigate('Reporte');
+  };
+  const handleTemperatura = () => {
+    navigation.navigate('Temperatura');
+  };
+  
+  
+
+  const handleInfoUsuario = () => {
+    navigation.navigate('Usuario');
   };
 
   return (
@@ -84,19 +97,28 @@ const HomeScreen = () => {
 
       {/* Animated Dropdown Menu */}
       <Animated.View style={[styles.dropdownMenu, { height: menuHeight }]}>
-        <TouchableOpacity style={styles.menuItem} onPress={handleAlumnos}>
-          <Icon name="account-circle" size={22} color="#333" />
-          <Text style={styles.menuItemText}>Alumnos</Text>
+       <TouchableOpacity style={styles.menuItem} onPress={handleAlumnos}>
+         <Icon name="account-circle" size={22} color="#333" />
+         <Text style={styles.menuItemText}>Alumnos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={handleLibros}>
-          <Icon name="book" size={22} color="#333" />
-          <Text style={styles.menuItemText}>Libros</Text>
+           <Icon name="book" size={22} color="#333" />
+           <Text style={styles.menuItemText}>Libros</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handlePrestamos}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlePrestamos}>
           <Icon name="note-outline" size={22} color="#333" />
-          <Text style={styles.menuItemText}>Prestamos </Text>
+          <Text style={styles.menuItemText}>Prestamos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={handleReporte}>
+          <Icon name="alert" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Reportes Historial</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={handleTemperatura} >
+          <Icon name="thermometer" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Temperatura</Text>
         </TouchableOpacity>
       </Animated.View>
+
 
       {/* Body section */}
       <View style={styles.body}>
@@ -127,21 +149,39 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* Reportes Overlay */}
-      {reportesVisible && (
-        <View style={styles.reportesOverlay}>
-          <View style={styles.reportesForm}>
-            <Text style={styles.reportesTitle}>Reportar Libro Perdido</Text>
+      {/* Reportes Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Realizar reporte</Text>
             <TextInput
-              style={styles.reportesInput}
-              placeholder="Título del libro"
+              style={styles.modalInput}
+              placeholder="Asunto"
+              value={tituloLibro}
+              onChangeText={setTituloLibro}
             />
-            <TouchableOpacity style={styles.reportesButton} onPress={toggleReportes}>
-              <Text style={styles.reportesButtonText}>Reportar</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={toggleReportes}
+            >
+              <Text style={styles.modalButtonText}>Reportar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: 'red', marginTop: 10 }]}
+              onPress={() => setModalVisible(false)} // Evento para cerrar el modal
+            >
+               <Text style={styles.modalButtonText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
         </View>
-      )}
+      </Modal>
 
       {/* Footer section */}
       <View style={styles.footer}>
@@ -150,6 +190,10 @@ const HomeScreen = () => {
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
+          <Icon name="alert" size={35} color="#006400" />
+          <Text style={styles.iconText}>Reportes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton} onPress={handleInfoUsuario}>
           <Icon name="account-circle" size={35} color="#006400" />
           <Text style={styles.iconText}>Info Usuario</Text>
         </TouchableOpacity>
@@ -198,7 +242,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     zIndex: 2,
     overflow: 'hidden',
+    height: 250, // Ajusta esta altura según sea necesario para que todas las opciones sean visibles
   },
+  
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -234,7 +280,7 @@ const styles = StyleSheet.create({
   },
   reportesBox: {
     backgroundColor: 'green',
-    padding: 50,
+    padding: 30,
     borderRadius: 30,
     alignItems: 'center',
   },
@@ -258,7 +304,7 @@ const styles = StyleSheet.create({
   },
   visitasBox: {
     backgroundColor: '#006400', 
-    padding: 50,
+    padding: 30,
     borderRadius: 30,
     alignItems: 'center',
   },
@@ -272,34 +318,51 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 5,
   },
-  reportesOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  centeredView: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 22,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  reportesForm: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    width: 300,
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  reportesInput: {
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalInput: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
+    marginBottom: 20,
+    paddingHorizontal: 10,
     borderRadius: 5,
+    width: 200,
   },
-  reportesButton: {
-    backgroundColor: '#4F8EF7',
-    padding: 10,
+  modalButton: {
+    backgroundColor: 'green',
     borderRadius: 5,
-    alignItems: 'center',
+    padding: 10,
+    elevation: 2,
   },
-  reportesButtonText: {
-    color: '#fff',
+  modalButtonText: {
+    color: 'white',
     fontWeight: 'bold',
   },
   footer: {

@@ -25,7 +25,7 @@ const LibrosScreen = () => {
 
   const toggleMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: menuVisible ? 0 : 150,
+      toValue: menuVisible ? 0 : 280,
       duration: 200,
       useNativeDriver: false,
     }).start();
@@ -53,7 +53,19 @@ const LibrosScreen = () => {
   const handlePrestamos = () => {
     navigation.navigate('Prestamos');
   };
+  const handleReporte = () => {
+    navigation.navigate('Reporte');
+  };
+ 
+
+  const handleInfoUsuario = () => {
+    navigation.navigate('Usuario');
+  };
+  const handleTemperatura = () => {
+    navigation.navigate('Temperatura');
+  };
   
+
   const handleLibros = () => {
     // Puedes realizar acciones específicas para la sección de libros aquí
   };
@@ -105,6 +117,14 @@ const LibrosScreen = () => {
           <Icon name="note-outline" size={22} color="#333" />
           <Text style={styles.menuItemText}>Prestamos</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={handleReporte}>
+          <Icon name="alert" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Reportes Historial</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem} onPress={handleTemperatura}>
+          <Icon name="thermometer" size={22} color="#333" />
+          <Text style={styles.menuItemText}>Temperatura</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Body section */}
@@ -140,7 +160,7 @@ const LibrosScreen = () => {
           <Icon name="home" size={35} color="#006400" />
           <Text style={styles.iconText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={toggleReportes}>
+        <TouchableOpacity style={styles.iconButton} onPress={handleInfoUsuario}>
           <Icon name="account-circle" size={35} color="#006400" />
           <Text style={styles.iconText}>Info Usuario</Text>
         </TouchableOpacity>
