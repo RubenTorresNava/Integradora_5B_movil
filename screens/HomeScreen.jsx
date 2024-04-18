@@ -14,12 +14,13 @@ const HomeScreen = () => {
   const [countAlumnos, setCountAlumnos] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [tituloLibro, setTituloLibro] = useState('');
+  const [contarVisitas, setContarVisitas] = useState(0);
 
   // Función para obtener el total de libros
   useEffect(() => {
     const fetchLibros = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/integradora/libros/count');
+        const response = await axios.get('http://192.168.1.6:7800/api/libro/contarLibro');
         setCountLibros(response.data.total);
       } catch (error) {
         console.error("Error al obtener el total de libros:", error);
@@ -28,14 +29,24 @@ const HomeScreen = () => {
 
     const fetchAlumnos = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/integradora/alumnos/count');
+        const response = await axios.get('http://192.168.1.6:7800/api/alumno/contarAlumnos');
         setCountAlumnos(response.data.total);
       } catch (error) {
         console.error("Error al obtener el total de alumnos:", error);
       }
-    }
+    };
+
+    const fetchVisitas = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.6:7800/api/alumno/contarVisitas');
+        setContarVisitas(response.data.total);
+      } catch (error) {
+        console.error("Error al obtener el total de visitas:", error);
+      }
+    };
     fetchAlumnos();
     fetchLibros();
+    fetchVisitas();
   }, []);
 
   const toggleMenu = () => {
@@ -143,7 +154,7 @@ const HomeScreen = () => {
         <View style={styles.visitasContainer}>
           <View style={styles.visitasBox}>
             <Text style={styles.visitasTitle}>Visitas</Text>
-            <Text style={styles.visitasCount}>{numReportesAlumnos}</Text>
+            <Text style={styles.visitasCount}>{(contarVisitas || 0)}</Text>
             <Icon name="eye" size={40} color="white" />
           </View>
         </View>

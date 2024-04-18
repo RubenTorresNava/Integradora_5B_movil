@@ -14,7 +14,7 @@ const AlumnosScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/integradora/alumnos');
+        const response = await axios.get('http://192.168.1.6:7800/api/alumno/obtenerAlumnos');
         console.log(response.data);
 
         setDatos(response.data);
@@ -70,7 +70,7 @@ const AlumnosScreen = () => {
   
 
   const renderAlumnoItem = ({ item }) => (
-    <TouchableOpacity style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', prestamo.idprestamo)}>
+    <TouchableOpacity style={styles.libroItem}>
       <Text style={styles.noCtrl}>NÚMERO DE CONTROL: {item.noCtrl}</Text>
       <Text style={styles.nombre}>NOMBRE: {item.nombre}</Text>
       <Text style={styles.apellidoP}>APELLIDO PATERNO: {item.apellidoP}</Text>

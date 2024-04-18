@@ -14,7 +14,7 @@ const LibrosScreen = () => {
   useEffect(() => {
     const fetchLibros = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/integradora/libros');
+        const response = await axios.get('http://192.168.1.6:7800/api/libro/obtenerLibros');
         setDatos(response.data);
       } catch (error) {
         console.error('Error al obtener los libros:', error);

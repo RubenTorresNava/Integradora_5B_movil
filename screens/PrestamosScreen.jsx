@@ -16,10 +16,10 @@ const PrestamosScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/integradora/prestamos');
+        const response = await axios.get('http://192.168.1.6:7800/api/prestamo/obtenerPrestamos');
         console.log(response.data);
 
-        setDatos(response.data);
+        setDatos(response.data.prestamos);
       } catch (error) {
         console.error(error);
       }
@@ -73,12 +73,11 @@ const PrestamosScreen = () => {
   };
 
   const renderPrestamoItem = ({ item }) => (
-    <TouchableOpacity style={styles.libroItem} onPress={() => console.log('Libro seleccionado:', item.idPrestamo)}>
+    <TouchableOpacity style={styles.libroItem}>
       <Text style={styles.prestamoID}>Fólio: {item.idPrestamo}</Text>
       <Text style={styles.estado}>Estado del prestamo: {item.estado}</Text>
       <Text style={styles.estado}>Fecha de prestamo: {item.fechaPrestamo}</Text>
       <Text style={styles.estado}>Fecha de entrega: {item.fechaEntrega}</Text>
-      
     </TouchableOpacity>
   );
 
@@ -127,7 +126,7 @@ const PrestamosScreen = () => {
         <FlatList
           data={datos}
           renderItem={renderPrestamoItem}
-          keyExtractor={(item) => item.idPrestamo.toString()}
+          keyExtractor={(item) => item._id.toString()}
           numColumns={2} // Define el número de columnas en tu cuadrícula
           contentContainerStyle={styles.librosContainer} // Ajusta el estilo del contenedor
         />
