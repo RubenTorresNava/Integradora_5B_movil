@@ -14,18 +14,18 @@ export default function LoginScreen() {
 
 
   const handleLogin = async () => {
-/*     try {
-      const response = await axios.post('http://localhost:3000/login', { usuario, password });
+     try {
+      const response = await axios.post('http://192.168.1.6:7800/api/empleado/login', { usuario, password });
 
-      if (response.data.token) { */
+      if (response.data.token) { 
         // Aquí puedes manejar el token de respuesta, como guardarlo en el almacenamiento local
         navigation.navigate('Home');
-/*       } else {
+       } else {
         console.error('Error de inicio de sesión:', response.data.msg);
       }
     } catch (error) {
       console.error('Error de inicio de sesión:', error.message);
-    } */
+    }
   };
 
 
