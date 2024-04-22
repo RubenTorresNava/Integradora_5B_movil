@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, ActivityIndicator, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from "axios";
 
 
 const UsuarioScreen = () => {
@@ -12,8 +13,25 @@ const UsuarioScreen = () => {
     const [visitas, setVisitas] = useState([]);
     const [motivosVisitas, setMotivosVisitas] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(null);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [usuarios, setUsuarios] = useState([]);
+
+    useEffect(() => {
+      const fetchUsuarios = async () => {
+          try {
+              const response = await axios.get('http://192.168.1.6:7800/api/empleado/obtenerEmpleados');
+              setUsuarios(response.data);
+              setLoading(false);
+          } catch (error) {
+              console.log('Error al obtener los datos de usuarios:', error);
+              setLoading(false);
+          }
+      };
+      fetchUsuarios();
+    }, []);
+
 
      const toggleMenu = () => {
       Animated.timing(menuHeight, {
@@ -60,16 +78,31 @@ const UsuarioScreen = () => {
         setModalVisible(!modalVisible);
     };
 
-    const handleChangePassword = () => {
-      toggleModal();
-    };
+    const handleChangePassword = (userId) => {
+      setSelectedUserId(userId);
+      setModalVisible(true);
+  };
 
-    const changePassword = () => {
-        // Aquí puedes agregar la lógica para cambiar la contraseña
-        // Por ejemplo, puedes comparar newPassword con confirmPassword y realizar la acción correspondiente
-        toggleModal();
-    };
+  const changePassword = async () => {
+      // Validar que las contraseñas coincidan
+      if (newPassword !== confirmPassword) {
+          console.log('Las contraseñas no coinciden');
+          return;
+      }
 
+      try {
+          await axios.put('http://192.168.1.6:7800/api/empleado/actualizarPassword', {
+              noEmpleado: selectedUserId,
+              password: newPassword
+          });
+          setModalVisible(false);
+          setNewPassword('');
+          setConfirmPassword('');
+          console.log('Contraseña actualizada correctamente');
+      } catch (error) {
+          console.log('Error al cambiar contraseña:', error);
+      }
+    };
     return (
       <View style={styles.container}>
         {/* Header section */}
@@ -111,29 +144,34 @@ const UsuarioScreen = () => {
   
         {/* Body section */}
         <View style={styles.body}>
-            {/* Informacion del perfil */}
-            <View style={styles.profileInfoContainer}>
-                <Icon name="account-circle" size={80} color="black" />
-                <View style={styles.profileInfo}>
-                    {/* Aquí puedes mostrar la información del perfil */}
-                    <Text style={styles.profileInfoText}>Nombre: Ruben Torres Nava</Text>
-                    <Text style={styles.profileInfoText}>Correo: rubentorres@gmail.com</Text>
-                    <Text style={styles.profileInfoText}>Telefono: 618372511</Text>
-                    <Text style={styles.profileInfoText}>Fecha Nacimiento: 12/8/1992</Text>
-                    {/* Puedes agregar más campos de información del perfil según necesites */}
-                </View>
+                {loading ? (
+                    <ActivityIndicator size="large" color="#006400" />
+                ) : (
+                  usuarios.map(usuario => (
+                    <View key={usuario.noEmpleado} style={styles.profileInfoContainer}>
+                        <Icon name="account-circle" size={80} color="black" />
+                        <View style={styles.profileInfo}>
+                            <Text style={styles.profileInfoText}>Número de empleado: {usuario.noEmpleado}</Text>
+                            <Text style={styles.profileInfoText}>Usuario: {usuario.usuario}</Text>
+                        </View>
+                        <TouchableOpacity
+                            style={styles.changePasswordButton}
+                            onPress={() => handleChangePassword(usuario.noEmpleado)} // Pasar el ID del usuario al presionar el botón
+                        >
+                            <Text style={styles.changePasswordButtonText}>Cambiar Contraseña</Text>
+                        </TouchableOpacity>
+                    </View>
+                ))
+                
+                )}
             </View>
-            {/* Botón para cambiar la contraseña */}
-            <TouchableOpacity style={styles.changePasswordButton} onPress={handleChangePassword}>
-                <Text style={styles.changePasswordButtonText}>Cambiar Contraseña</Text>
-            </TouchableOpacity>
+
+            {/* Modal para cambiar contraseña */}
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => {
-                    toggleModal();
-                }}
+                onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
@@ -155,7 +193,7 @@ const UsuarioScreen = () => {
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
                                 style={[styles.modalButton, styles.cancelButton]}
-                                onPress={toggleModal}
+                                onPress={() => setModalVisible(false)}
                             >
                                 <Text style={styles.modalButtonText}>Cancelar</Text>
                             </TouchableOpacity>
@@ -169,7 +207,6 @@ const UsuarioScreen = () => {
                     </View>
                 </View>
             </Modal>
-        </View>
 
         {/* Footer section */}
         <View style={styles.footer}>
@@ -268,75 +305,74 @@ const UsuarioScreen = () => {
       marginBottom: 20,
       backgroundColor: '#32cd32',
       borderRadius: 50,
-      height: 200,
-    },
-    profileInfo: {
+      height: 125
+  },
+  profileInfo: {
       marginLeft: 50,
-      
-    },
-    profileInfoText: {
+  },
+  profileInfoText: {
       fontSize: 18,
       color: 'black',
       marginBottom: 10,
-    },
-    changePasswordButton: {
+  },
+  changePasswordButton: {
       backgroundColor: '#006400',
       paddingVertical: 12,
       paddingHorizontal: 40,
       borderRadius: 5,
       alignItems: 'center',
       marginTop: 20,
-    },
-    changePasswordButtonText: {
+  },
+  changePasswordButtonText: {
       color: '#fff',
       fontWeight: 'bold',
       fontSize: 16,
-    },
-    modalContainer: {
+  },
+  modalContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
+  },
+  modalContent: {
       backgroundColor: '#fff',
       padding: 20,
       borderRadius: 10,
       width: '80%',
-    },
-    modalTitle: {
+  },
+  modalTitle: {
       fontSize: 20,
       fontWeight: 'bold',
       marginBottom: 10,
       textAlign: 'center',
-    },
-    input: {
+  },
+  input: {
       borderWidth: 1,
       borderColor: '#ccc',
       borderRadius: 5,
       padding: 10,
       marginBottom: 10,
-    },
-    modalButtons: {
+  },
+  modalButtons: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-    },
-    modalButton: {
+  },
+  modalButton: {
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 5,
       alignItems: 'center',
-    },
-    cancelButton: {
+  },
+  cancelButton: {
       backgroundColor: 'red',
-    },
-    confirmButton: {
+  },
+  confirmButton: {
       backgroundColor: '#006400',
-    },
-    modalButtonText: {
+  },
+  modalButtonText: {
       color: '#fff',
       fontWeight: 'bold',
-    },
+  },
     footer: {
       height: 90,
       backgroundColor: 'white',
