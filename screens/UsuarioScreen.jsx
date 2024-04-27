@@ -300,34 +300,39 @@ const UsuarioScreen = () => {
       paddingHorizontal: 20,
     },
     profileInfoContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'column', // Cambiado a columna para alinear elementos verticalmente
+      alignItems: 'center', // Alineación central en el eje horizontal
       marginBottom: 20,
       backgroundColor: '#32cd32',
       borderRadius: 50,
-      height: 125
-  },
-  profileInfo: {
-      marginLeft: 50,
-  },
+      paddingVertical: 20, // Aumentado el espacio vertical
+      paddingHorizontal: 20,
+      width: '100%',
+    },
+    profileInfo: {
+      alignItems: 'center',
+      marginBottom: 10, // Modificado para agregar espacio entre la información del usuario y el botón
+    },
   profileInfoText: {
-      fontSize: 18,
+      fontSize: 16,
       color: 'black',
       marginBottom: 10,
   },
   changePasswordButton: {
-      backgroundColor: '#006400',
-      paddingVertical: 12,
-      paddingHorizontal: 40,
-      borderRadius: 5,
-      alignItems: 'center',
-      marginTop: 20,
+    backgroundColor: '#006400',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10, // Movido el marginTop dentro del botón para ajustar el espacio
+    alignSelf: 'center',
   },
   changePasswordButtonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
+  
   modalContainer: {
       flex: 1,
       justifyContent: 'center',

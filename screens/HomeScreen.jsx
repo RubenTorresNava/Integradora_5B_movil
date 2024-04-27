@@ -15,38 +15,38 @@ const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [tituloLibro, setTituloLibro] = useState('');
   const [contarVisitas, setContarVisitas] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Función para obtener el total de libros
+  // Función para obtener el total de libros, alumnos y visitas
+  const obtenerTotales = async () => {
+      try {
+          const [responseLibros, responseAlumnos, responseVisitas] = await Promise.all([
+              axios.get('http://192.168.1.6:7800/api/libro/contarLibro'),
+              axios.get('http://192.168.1.6:7800/api/alumno/contarAlumnos'),
+              //axios.get('http://192.168.1.6:7800/api/alumno/contarVisitas')
+          ]);
+          setCountLibros(responseLibros.data.total);
+          setCountAlumnos(responseAlumnos.data.total);
+          //setContarVisitas(responseVisitas.data.total);
+      } catch (error) {
+          console.error('Error al obtener los totales:', error);
+      } finally {
+          setRefreshing(false); // Detener el indicador de carga
+      }
+  };
+
+  const onRefresh = () => {
+      setRefreshing(true); // Iniciar el indicador de carga
+      obtenerTotales(); // Obtener los totales nuevamente
+  };
+
+      // Configurar un temporizador para actualizar los reportes cada cierto intervalo de tiempo (por ejemplo, cada 5 minutos)
+      const interval = setInterval(() => {
+        obtenerReportes();
+      }, 300000); // 300000 ms = 5 minutos  
+
   useEffect(() => {
-    const fetchLibros = async () => {
-      try {
-        const response = await axios.get('http://192.168.1.6:7800/api/libro/contarLibro');
-        setCountLibros(response.data.total);
-      } catch (error) {
-        console.error("Error al obtener el total de libros:", error);
-      }
-    };
-
-    const fetchAlumnos = async () => {
-      try {
-        const response = await axios.get('http://192.168.1.6:7800/api/alumno/contarAlumnos');
-        setCountAlumnos(response.data.total);
-      } catch (error) {
-        console.error("Error al obtener el total de alumnos:", error);
-      }
-    };
-
-    const fetchVisitas = async () => {
-      try {
-        const response = await axios.get('http://192.168.1.6:7800/api/alumno/contarVisitas');
-        setContarVisitas(response.data.total);
-      } catch (error) {
-        console.error("Error al obtener el total de visitas:", error);
-      }
-    };
-    fetchAlumnos();
-    fetchLibros();
-    fetchVisitas();
+      obtenerTotales();
   }, []);
 
   const toggleMenu = () => {
@@ -138,7 +138,7 @@ const HomeScreen = () => {
           <View style={styles.reportesBox}>
             <Text style={styles.reportesTitle}>Libros</Text>
             <Text style={styles.reportesCount}>
-              <Icon name="book" size={40} color="white" /> {(countLibros || 0)}
+              <Icon name="book" size={40} color="white" /> {countLibros}
             </Text>
           </View>
           <View style={styles.separator}></View>

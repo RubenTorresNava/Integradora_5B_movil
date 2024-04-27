@@ -228,19 +228,20 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#F5F5F5',
+    padding: 10,
   },
   bodyContent: {
     fontSize: 18,
     color: '#333',
+    marginBottom: 10
   },
-  librosContainer: {
+/*   librosContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingTop: 10,
-  },
+  }, */
   libroItem: {
     flex: 1,
     flexDirection: 'column',

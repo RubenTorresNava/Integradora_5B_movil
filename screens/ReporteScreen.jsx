@@ -2,16 +2,53 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, TextInput, Image, ActivityIndicator, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import axios from "axios";
 
 const ReporteScreen = () => {
     const navigation = useNavigation();
     const [menuVisible, setMenuVisible] = useState(false);
     const menuHeight = useRef(new Animated.Value(0)).current;
     const [modalVisible, setModalVisible] = useState(false);
+    const [reportePrestamo, setReportePrestamo] = useState([]);
+    const [reporteLibro, setReporteLibro] = useState([]);
+    const [reporteVisita, setReporteVisita] = useState([]);
+    const [reporteMotivoVisitas, setReporteMotivoVisitas] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const obtenerReportes = async () => {
+        try {
+            const [responsePrestamos, responseLibros, responseVisitas, responseMotivoVisitas] = await Promise.all([
+                axios.get('http://192.168.1.6:7800/api/reporte/reportePrestamos'),
+                axios.get('http://192.168.1.6:7800/api/reporte/reporteLibros'),
+                axios.get('http://192.168.1.6:7800/api/reporte/reporteVisitas'),
+                axios.get('http://192.168.1.6:7800/api/reporte/reporteMotivoVisita')
+            ]);
+            setReportePrestamo(responsePrestamos.data.totalPrestamos);
+            setReporteLibro(responseLibros.data);
+            setReporteVisita(responseVisitas.data);
+            setReporteMotivoVisitas(responseMotivoVisitas.data._id);
+        } catch (error) {
+            console.error('Error al obtener los reportes:', error);
+        } finally {
+            setRefreshing(false); // Detener el indicador de carga
+        }
+    };
+
+    //refrescar la pantalla al hacer scroll hacia abajo
+    const onRefresh = () => {
+        setRefreshing(true);
+        obtenerReportes();
+    };
+
+    // Configurar un temporizador para actualizar los reportes cada cierto intervalo de tiempo (por ejemplo, cada 5 minutos)
+    const interval = setInterval(() => {
+      obtenerReportes();
+    }, 300000); // 300000 ms = 5 minutos
+
+    useEffect(() => {
+        obtenerReportes();
+    }, []);
    
-
-
     const toggleMenu = () => {
       Animated.timing(menuHeight, {
         toValue: menuVisible ? 0 : 280,
@@ -99,9 +136,15 @@ const ReporteScreen = () => {
   
         {/* Body section */}
         <View style={styles.body}>
-           
-                  
-        </View>
+    <View style={styles.profileInfoContainer}>
+        <Text style={styles.profileInfoText}>Reporte del Día</Text>
+        <Text>Prestamos Realizados en el Día: {reportePrestamo}</Text>
+        <Text>Libros con Pocos Ejemplares: {reporteLibro.length}</Text>
+        <Text>Visitas Realizadas en el Día: {reporteVisita.length}</Text>
+        <Text>Motivo de Visita mas Común: {reporteMotivoVisitas}</Text>
+    </View>
+</View>
+
 
         {/* Footer section */}
         <View style={styles.footer}>
@@ -195,22 +238,24 @@ const ReporteScreen = () => {
       paddingHorizontal: 20,
     },
     profileInfoContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'column', // Cambiado a columna para alinear elementos verticalmente
+      alignItems: 'center', // Alineación central en el eje horizontal
       marginBottom: 20,
       backgroundColor: '#32cd32',
       borderRadius: 50,
-      height: 200,
+      paddingVertical: 20, // Aumentado el espacio vertical
+      paddingHorizontal: 20,
+      width: '100%',
     },
     profileInfo: {
-      marginLeft: 50,
-      
+      alignItems: 'center',
+      marginBottom: 10, // Modificado para agregar espacio entre la información del usuario y el botón
     },
-    profileInfoText: {
-      fontSize: 18,
+  profileInfoText: {
+      fontSize: 16,
       color: 'black',
       marginBottom: 10,
-    },
+  },
     changePasswordButton: {
       backgroundColor: '#006400',
       paddingVertical: 12,
